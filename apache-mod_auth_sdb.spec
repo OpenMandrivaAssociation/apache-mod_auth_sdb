@@ -6,7 +6,7 @@
 Summary:	Mod_auth_sdb is a DSO module for the apache Web server
 Name:		apache-%{mod_name}
 Version:	0.12
-Release:	%mkrel 6
+Release:	%mkrel 7
 Group:		System/Servers
 License:	Apache License
 URL:		http://shebang.jp/src/apache/
@@ -23,8 +23,6 @@ Requires:	apache-conf >= 2.2.0
 Requires:	apache >= 2.2.0
 BuildRequires:	apache-devel >= 2.2.0
 BuildRequires:	file
-Provides:	apache2-mod_auth_sdb
-Obsoletes:	apache2-mod_auth_sdb
 Epoch:		1
 BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
 
