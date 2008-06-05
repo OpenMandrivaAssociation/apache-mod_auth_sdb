@@ -24,7 +24,7 @@ Requires:	apache >= 2.2.0
 BuildRequires:	apache-devel >= 2.2.0
 BuildRequires:	file
 Epoch:		1
-BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 This module provides Apache user authentication using LibSDB.
