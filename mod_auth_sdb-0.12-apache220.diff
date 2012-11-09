@@ -1,0 +1,102 @@
+--- mod_auth_sdb.c	2005-12-16 00:09:33.000000000 +0100
++++ mod_auth_sdb.c.oden	2005-12-16 00:09:12.000000000 +0100
+@@ -28,6 +28,31 @@
+ typedef apr_table_t table;
+ typedef apr_table_entry_t table_entry;
+ 
++#include <ap_mmn.h>
++
++#if AP_MODULE_MAGIC_AT_LEAST(20051115, 0)
++/* APR 1.x compatibility */
++#define ap_pstrdup apr_pstrdup
++#define ap_psprintf apr_psprintf
++#define ap_pcalloc apr_pcalloc
++#define ap_table_setn apr_table_setn
++#define ap_table_set apr_table_set
++#define ap_table_get apr_table_get
++#define ap_make_table apr_table_make
++#define ap_register_cleanup apr_pool_cleanup_register
++#define APR_XtOffsetOf APR_OFFSETOF
++#define ap_pstrcat apr_pstrcat
++#define ap_null_cleanup apr_pool_cleanup_null
++#define ap_base64decode apr_base64_decode
++#define ap_base64decode_len apr_base64_decode_len
++#define ap_base64encode apr_base64_encode
++#define ap_base64encode_len apr_base64_encode_len
++#define ap_table_add apr_table_add
++#define ap_vsnprintf apr_vsnprintf
++#define ap_snprintf apr_snprintf
++#define ap_validate_password apr_password_validate
++#endif
++
+ #define AUTH_REQUIRED HTTP_UNAUTHORIZED
+ #define XtOffsetOf(dir_conf, member) APR_XtOffsetOf(dir_conf, member)
+ 
+@@ -91,46 +116,36 @@
+ 
+ static const command_rec auth_sdb_cmds[] =
+ {
+-    {"AuthSDBURL", (void *)ap_set_string_slot,
+-     (void *)XtOffsetOf(auth_sdb_config_rec, url),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb url string"},
+-    {"AuthSDBUserTable", (void *)ap_set_string_slot,
++    AP_INIT_TAKE1("AuthSDBURL", ap_set_string_slot,
++     (void *) XtOffsetOf(auth_sdb_config_rec, url),
++     OR_AUTHCFG, "set sdb url string"),
++    AP_INIT_TAKE1("AuthSDBUserTable", ap_set_string_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_user_table),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb user table"},
+-    {"AuthSDBUserField", (void *)ap_set_string_slot,
++     OR_AUTHCFG, "set sdb user table"),
++    AP_INIT_TAKE1("AuthSDBUserField", ap_set_string_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_user_field),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb username field"},
+-    {"AuthSDBPasswdField", (void *)ap_set_string_slot,
++     OR_AUTHCFG, "set sdb username field"),
++    AP_INIT_TAKE1("AuthSDBPasswdField", ap_set_string_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_passwd_field),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb passwd field"},
+-    {"AuthSDBGroupTable", (void *)ap_set_string_slot,
++     OR_AUTHCFG, "set sdb passwd field"),
++    AP_INIT_TAKE1("AuthSDBGroupTable", ap_set_string_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_group_table),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb group table"},
+-    {"AuthSDBGroupField", (void *)ap_set_string_slot,
++     OR_AUTHCFG, "set sdb group table"),
++    AP_INIT_TAKE1("AuthSDBGroupField", ap_set_string_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_group_field),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb group field"},
+-    {"AuthSDBGroupUserField", (void *)ap_set_string_slot,
++     OR_AUTHCFG, "set sdb group field"),
++    AP_INIT_TAKE1("AuthSDBGroupUserField", ap_set_string_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_groupuser_field),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb group user field"},
+-    {"AuthSDBWhereClause", (void *)ap_set_string_slot,
++     OR_AUTHCFG, "set sdb group user field"),
++    AP_INIT_TAKE1("AuthSDBWhereClause", ap_set_string_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_where_clause),
+-     OR_AUTHCFG, TAKE1, 
+-     "set sdb optional WHERE clause"},
+-    {"AuthSDBPlainText", (void *)ap_set_flag_slot,
++     OR_AUTHCFG, "set sdb optional WHERE clause"),
++    AP_INIT_FLAG("AuthSDBPlainText", ap_set_flag_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, auth_passwd_type),
+-     OR_AUTHCFG, FLAG, 
+-     "use plain text or crypted passwd"},
+-    {"AuthSDBAuthoritative", (void *)ap_set_flag_slot,
++     OR_AUTHCFG, "use plain text or crypted passwd"),
++    AP_INIT_FLAG("AuthSDBAuthoritative", ap_set_flag_slot,
+      (void *) XtOffsetOf(auth_sdb_config_rec, authoritative),
+-     OR_AUTHCFG, FLAG, 
+-     "AuthSDB is authoritative or not"},
++     OR_AUTHCFG, "AuthSDB is authoritative or not"),
+     {NULL}
+ };
+ 

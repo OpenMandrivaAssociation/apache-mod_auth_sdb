@@ -1,0 +1,21 @@
+--- mod_auth_sdb.c	2002-04-22 07:19:19.000000000 +0200
++++ mod_auth_sdb.c.oden	2003-04-13 16:21:56.000000000 +0200
+@@ -354,9 +354,18 @@
+ }
+ 
+ #ifdef APACHE2 /* for Apache 2.x */
++
++static int auth_sdb_init_handler(apr_pool_t *p, apr_pool_t *plog,
++                                apr_pool_t *ptemp, server_rec *s)
++{
++    ap_add_version_component(p, "mod_auth_sdb/0.12");
++    return OK;
++}
++        
+ static void
+ auth_sdb_register_hooks(pool *p)
+ {
++    ap_hook_post_config(auth_sdb_init_handler, NULL, NULL, APR_HOOK_MIDDLE);
+     ap_hook_check_user_id(auth_sdb_authen, NULL, NULL, APR_HOOK_MIDDLE);
+     ap_hook_auth_checker(auth_sdb_authz, NULL, NULL, APR_HOOK_MIDDLE);
+ }
