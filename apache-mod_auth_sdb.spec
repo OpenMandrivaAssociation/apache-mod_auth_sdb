@@ -9,7 +9,7 @@ Version:	0.12
 Release:	21
 Group:		System/Servers
 License:	Apache License
-URL:		http://shebang.jp/src/apache/
+URL:		https://shebang.jp/src/apache/
 Source0:	%{mod_name}-%{version}.tar.bz2
 Source1:	%{mod_conf}.bz2
 Patch0:		mod_auth_sdb-0.12-register.patch
